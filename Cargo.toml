@@ -9,7 +9,8 @@ crate-type = ["cdylib"]
 
 [dependencies.pyo3]
 version = "0.28.0"
-features = ["extension-module"]
+features = ["extension-module", "num-bigint"]
 
 [dependencies]
 decdnnf_rs = "1.1.0"
+num-bigint = "0.4.6"

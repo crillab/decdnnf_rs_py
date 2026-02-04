@@ -1,8 +1,8 @@
-use decdnnf_rs::{D4Reader, DecisionDNNF, DecisionDNNFReader, ModelEnumerator};
+use decdnnf_rs::{D4Reader, DecisionDNNF, DecisionDNNFReader, ModelCounter, ModelEnumerator};
+use num_bigint::BigUint;
 use pyo3::{exceptions::PyIOError, prelude::*, types::PyList};
 use std::{
-    fs::File,
-    sync::{Arc, Mutex},
+    fs::File, str::FromStr, sync::{Arc, Mutex}
 };
 
 #[pyclass]
@@ -36,6 +36,14 @@ impl PyDecisionDNNF {
             callback.call1(py, (py_model,))?;
         }
         Ok(())
+    }
+
+    fn count_models(&self, _py: Python) -> PyResult<BigUint> {
+        let lock = self.ddnnf.lock().unwrap();
+        let counter = ModelCounter::new(&lock, false);
+        let count = counter.global_count();
+        let big_uint = BigUint::from_str(count.to_string().as_str()).unwrap();
+        Ok(big_uint)
     }
 }
 
