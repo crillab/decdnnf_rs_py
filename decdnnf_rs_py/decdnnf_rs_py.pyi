@@ -23,20 +23,28 @@ class PyDecisionDNNF:
         :type n_vars: int
         """
 
-    def count_models() -> int:
+    def count_models(**kwargs: str) -> int:
         """
         Count the models of the Decision-DNNF.
 
         :return: the number of models of the Decision-DNNF
         :rtype: int
+        :param kwargs: see below
+
+        :Keyword Arguments:
+            * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def enumerate_models(callback: Callable[[List[bool]], None]) -> None:
-        """
+    def enumerate_models(callback: Callable[[List[bool]], None], **kwargs: str) -> None:
+        r"""
         Enumerates the models of the Decision-DNNF.
 
         The provided callback function is called with each model.
 
         :param callback: the function to call for each model
         :type callback: (List[bool]) -> None
+        :param kwargs: see below
+
+        :Keyword Arguments:
+            * *assumptions* search for models containing all the literals (as integers) of this list
         """
