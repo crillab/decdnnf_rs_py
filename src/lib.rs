@@ -37,6 +37,28 @@ impl PyDecisionDNNF {
         self.ddnnf.lock().unwrap().update_n_vars(n_vars);
     }
 
+    #[pyo3(signature = (**kwargs))]
+    fn model<'py>(
+        &self,
+        py: Python<'py>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Option<Bound<'py, PyList>>> {
+        let ddnnf = self.ddnnf.lock().unwrap();
+        let model_finder = ModelFinder::new(&ddnnf);
+        let model = if let Some(assumptions) = kwargs_to_assumptions(&ddnnf, kwargs)? {
+            model_finder.find_model_under_assumptions(assumptions.as_slice())
+        } else {
+            model_finder.find_model()
+        };
+        if let Some(m) = model {
+            let isize_model = m.into_iter().map(isize::from).collect::<Vec<_>>();
+            let py_model = PyList::new(py, &isize_model).unwrap();
+            Ok(Some(py_model))
+        } else {
+            Ok(None)
+        }
+    }
+
     #[pyo3(signature = (callback, **kwargs))]
     fn enumerate_models(
         &self,

@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 
 class PyDecisionDNNF:
@@ -21,6 +21,18 @@ class PyDecisionDNNF:
 
         :param n_vars: the new number of variables
         :type n_vars: int
+        """
+
+    def model(**kwargs: str) -> Optional[List[int]]:
+        """
+        Computes a model.
+
+        :return: the model, as a list of literals
+        :rtype: (List[int] | None)
+        :param kwargs: see below
+
+        :Keyword Arguments:
+            * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
     def count_models(**kwargs: str) -> int:
