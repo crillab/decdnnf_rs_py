@@ -47,11 +47,13 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def enumerate_models(callback: Callable[[List[bool]], None], **kwargs: str) -> None:
+    def enumerate_models(callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
         r"""
         Enumerates the models of the Decision-DNNF.
 
         The provided callback function is called with each model.
+        A model is given as a list of literals, sorted from the first variable to the last.
+        In case `None` replaces a literal, then setting any polarity to the literal leads to a model.
 
         :param callback: the function to call for each model
         :type callback: (List[bool]) -> None
@@ -59,4 +61,5 @@ class PyDecisionDNNF:
 
         :Keyword Arguments:
             * *assumptions* search for models containing all the literals (as integers) of this list
+            * *compact* a Boolean value indicating whether models must be compacted (literals replaced by `None` if both values leads to a model)
         """

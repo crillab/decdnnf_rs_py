@@ -6,7 +6,7 @@ use num_bigint::BigUint;
 use pyo3::{
     exceptions::PyIOError,
     prelude::*,
-    types::{PyDict, PyList},
+    types::{PyBool, PyDict, PyList},
 };
 use std::{
     fs::File,
@@ -14,6 +14,18 @@ use std::{
     str::FromStr,
     sync::{Arc, Mutex},
 };
+
+macro_rules! kwargs_value {
+    ($kwargs:tt, $key:tt, $type:ty) => {
+        if let Some(kwargs) = $kwargs
+            && let Some(v) = kwargs.get_item($key)?
+        {
+            Some(v.extract::<Bound<'_, $type>>()?)
+        } else {
+            None
+        }
+    };
+}
 
 #[pyclass]
 struct PyDecisionDNNF {
@@ -67,14 +79,17 @@ impl PyDecisionDNNF {
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<()> {
         let ddnnf = self.ddnnf.lock().unwrap();
-        let mut enumerator = ModelEnumerator::new(&ddnnf, false);
+        let compact = kwargs_value!(kwargs, "compact", PyBool)
+            .map(|pyb| pyb.extract::<bool>().unwrap())
+            == Some(true);
+        let mut enumerator = ModelEnumerator::new(&ddnnf, compact);
         if let Some(assumptions) = kwargs_to_assumptions(&ddnnf, kwargs)? {
             enumerator.set_assumptions(Rc::new(assumptions));
         }
         while let Some(m) = enumerator.compute_next_model() {
             let model = m
                 .iter()
-                .map(|opt_l| opt_l.map(isize::from).unwrap_or_default())
+                .map(|opt_l| opt_l.map(isize::from))
                 .collect::<Vec<_>>();
             let py_model = PyList::new(py, &model).unwrap();
             callback.call1(py, (py_model,))?;
@@ -99,18 +114,14 @@ fn kwargs_to_assumptions(
     dnnf: &DecisionDNNF,
     kwargs: Option<&Bound<'_, PyDict>>,
 ) -> PyResult<Option<Assumptions>> {
-    if let Some(kwargs) = kwargs
-        && let Some(py_list) = kwargs.get_item("assumptions")?
-    {
-        let py_assumptions = py_list.extract::<Bound<'_, PyList>>()?;
+    let assumptions = kwargs_value!(kwargs, "assumptions", PyList).map(|py_assumptions| {
         let assumptions = py_assumptions
             .iter()
             .map(|a| Literal::from(a.extract::<isize>().unwrap()))
             .collect::<Vec<_>>();
-        Ok(Some(Assumptions::new(dnnf.n_vars(), assumptions)))
-    } else {
-        Ok(None)
-    }
+        Assumptions::new(dnnf.n_vars(), assumptions)
+    });
+    Ok(assumptions)
 }
 
 impl From<DecisionDNNF> for PyDecisionDNNF {
