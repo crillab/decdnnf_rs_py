@@ -1,1 +1,9 @@
+# Rust
+Cargo.lock
 /target
+
+# Environments
+.env
+.venv
+env/
+venv/
