@@ -4,7 +4,6 @@ use decdnnf_rs::{
 };
 use num_bigint::BigUint;
 use pyo3::{
-    exceptions::PyIOError,
     prelude::*,
     types::{PyBool, PyDict, PyList},
 };
@@ -39,9 +38,7 @@ impl PyDecisionDNNF {
         let mut reader = D4Reader::default();
         <D4Reader as DecisionDNNFReader<File>>::set_do_not_check(&mut reader, true);
         let file = File::open(path)?;
-        let ddnnf = reader
-            .read(&file)
-            .map_err(|e| PyIOError::new_err(format!("{e}")))?;
+        let ddnnf = reader.read(&file)?;
         Ok(ddnnf.into())
     }
 
