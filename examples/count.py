@@ -14,7 +14,7 @@ def main(path, **kwargs):
         * *n-vars* the effective number of variables (must be greater than or equal to the number of variables declared in the Decision-DNNF)
         * *assumptions* search for models containing all the literals (as integers) of this list
     """
-    ddnnf = decdnnf_rs_py.PyDecisionDNNF(sys.argv[1])
+    ddnnf = decdnnf_rs_py.PyDecisionDNNF(path)
     if "n-vars" in kwargs:
         ddnnf.update_n_vars(int(kwargs["n-vars"]))
     new_kwargs = {}
