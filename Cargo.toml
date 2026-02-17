@@ -12,5 +12,7 @@ version = "0.28.0"
 features = ["anyhow", "num-bigint"]
 
 [dependencies]
+anyhow = "1.0.101"
 decdnnf_rs = "1.1.0"
 num-bigint = "0.4.6"
+rug = "1.28.1"

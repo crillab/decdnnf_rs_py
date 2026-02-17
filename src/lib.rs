@@ -1,12 +1,14 @@
+use anyhow::Context;
 use decdnnf_rs::{
-    Assumptions, D4Reader, DecisionDNNF, DecisionDNNFReader, Literal, ModelCounter,
-    ModelEnumerator, ModelFinder,
+    Assumptions, D4Reader, DecisionDNNF, DecisionDNNFReader, DirectAccessEngine, Literal,
+    ModelCounter, ModelEnumerator, ModelFinder, OrderedDirectAccessEngine,
 };
 use num_bigint::BigUint;
 use pyo3::{
     prelude::*,
     types::{PyBool, PyDict, PyList},
 };
+use rug::Integer;
 use std::{
     fs::File,
     rc::Rc,
@@ -76,9 +78,7 @@ impl PyDecisionDNNF {
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<()> {
         let ddnnf = self.ddnnf.lock().unwrap();
-        let compact = kwargs_value!(kwargs, "compact", PyBool)
-            .map(|pyb| pyb.extract::<bool>().unwrap())
-            == Some(true);
+        let compact = kwargs_is_set(kwargs, "compact")?;
         let mut enumerator = ModelEnumerator::new(&ddnnf, compact);
         if let Some(assumptions) = kwargs_to_assumptions(&ddnnf, kwargs)? {
             enumerator.set_assumptions(Rc::new(assumptions));
@@ -105,6 +105,53 @@ impl PyDecisionDNNF {
         let big_uint = BigUint::from_str(count.to_string().as_str()).unwrap();
         Ok(big_uint)
     }
+
+    #[pyo3(signature = (index, callback, **kwargs))]
+    fn direct_access(
+        &self,
+        py: Python,
+        index: BigUint,
+        callback: Py<PyAny>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<()> {
+        let ddnnf = self.ddnnf.lock().unwrap();
+        let lexico = kwargs_is_set(kwargs, "lexico")?;
+        let counter = ModelCounter::new(&ddnnf, false);
+        let engine = direct_access_engine(&counter, lexico);
+        let rug_index = Integer::from_str(index.to_str_radix(10).as_str())
+            .context("while parsing model index")?;
+        let model = engine(rug_index);
+        let model = model
+            .iter()
+            .map(|opt_l| opt_l.map(isize::from))
+            .collect::<Vec<_>>();
+        let py_model = PyList::new(py, &model).unwrap();
+        callback.call1(py, (py_model,))?;
+        Ok(())
+    }
+}
+
+pub(crate) fn direct_access_engine<'a>(
+    model_counter: &'a ModelCounter,
+    lexico: bool,
+) -> Box<dyn Fn(Integer) -> Vec<Option<Literal>> + 'a> {
+    if lexico {
+        let order = (1..=model_counter.ddnnf().n_vars())
+            .map(|i| Literal::from(-isize::try_from(i).unwrap()))
+            .collect::<Vec<_>>();
+        let engine = OrderedDirectAccessEngine::new(model_counter.ddnnf(), order).unwrap();
+        Box::new(move |i| {
+            engine
+                .model(i)
+                .unwrap()
+                .iter()
+                .map(|l| Some(*l))
+                .collect::<Vec<_>>()
+        })
+    } else {
+        let engine = DirectAccessEngine::new(model_counter);
+        Box::new(move |i| engine.model(i).unwrap())
+    }
 }
 
 fn kwargs_to_assumptions(
@@ -119,6 +166,10 @@ fn kwargs_to_assumptions(
         Assumptions::new(dnnf.n_vars(), assumptions)
     });
     Ok(assumptions)
+}
+
+fn kwargs_is_set(kwargs: Option<&Bound<'_, PyDict>>, flag: &str) -> PyResult<bool> {
+    Ok(kwargs_value!(kwargs, flag, PyBool).map(|pyb| pyb.extract::<bool>().unwrap()) == Some(true))
 }
 
 impl From<DecisionDNNF> for PyDecisionDNNF {

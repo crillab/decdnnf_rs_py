@@ -63,3 +63,23 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
             * *compact* a Boolean value indicating whether models must be compacted (literals replaced by `None` if both values leads to a model)
         """
+
+    def direct_access(index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+        r"""
+        Computes the n-th model of the Decision-DNNF.
+
+        The provided callback function is called with the model.
+        A model is given as a list of literals, sorted from the first variable to the last.
+
+        The default order is dependant of the structure of the Decision-DNNF in memory.
+        In order to sort the models using the lexicographic order, sets the `lexico` flag to True (default order is clearly faster).
+
+        :param index: the index of the model; must be lower than the model count
+        :type index: int
+        :param callback: the function to call on the model
+        :type callback: (List[bool]) -> None
+        :param kwargs: see below
+
+        :Keyword Arguments:
+            * *compact* sets the lexicographic order 
+        """
