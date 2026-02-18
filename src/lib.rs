@@ -6,9 +6,11 @@ use decdnnf_rs::{
 use num_bigint::BigUint;
 use pyo3::{
     prelude::*,
-    types::{PyBool, PyDict, PyList},
+    types::{PyBool, PyDict, PyList, PyString},
 };
-use rug::Integer;
+use rand::Rng;
+use rug::{Integer, rand::RandState};
+use rustc_hash::FxHashMap;
 use std::{
     fs::File,
     rc::Rc,
@@ -127,6 +129,55 @@ impl PyDecisionDNNF {
             .collect::<Vec<_>>();
         let py_model = PyList::new(py, &model).unwrap();
         callback.call1(py, (py_model,))?;
+        Ok(())
+    }
+
+    #[pyo3(signature = (n_samples, callback, **kwargs))]
+    fn sampling(
+        &self,
+        py: Python,
+        n_samples: BigUint,
+        callback: Py<PyAny>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<()> {
+        let ddnnf = self.ddnnf.lock().unwrap();
+        let lexico = kwargs_is_set(kwargs, "lexico")?;
+        let seed_arg = kwargs_value!(kwargs, "seed", PyString).map(|pystr| pystr.extract::<String>());
+        let seed = if let Some(s) = seed_arg {
+            Integer::from_str_radix(&s?, 10).context("while parsing seed")?
+        } else {
+            Integer::from(rand::rng().next_u64())
+        };
+        let mut rand = RandState::new_mersenne_twister();
+        rand.seed(&seed);
+        let model_counter = ModelCounter::new(&ddnnf, false);
+        let n_models = model_counter.global_count();
+        let param_n_samples = Integer::from_str(n_samples.to_str_radix(10).as_str())
+            .context("while parsing model index")?;
+        let mut n_samples = model_counter.global_count().clone();
+        if n_samples > param_n_samples {
+            n_samples = param_n_samples;
+        }
+        let engine = direct_access_engine(&model_counter, lexico);
+        let mut counter = Integer::ZERO;
+        let mut swapped: FxHashMap<Integer, Integer> = FxHashMap::default();
+        while counter < n_samples {
+            let mut bound = Integer::from(n_models - &counter);
+            let rand_index = Integer::from(bound.random_below_ref(&mut rand));
+            bound -= 1;
+            let last_value = swapped.get(&bound).unwrap_or(&bound).to_owned();
+            let rand_value = swapped
+                .insert(rand_index, last_value)
+                .unwrap_or_else(|| Integer::from(bound.random_below_ref(&mut rand)));
+            let m = engine(rand_value);
+            let model = m
+                .iter()
+                .map(|opt_l| opt_l.map(isize::from))
+                .collect::<Vec<_>>();
+            let py_model = PyList::new(py, &model).unwrap();
+            callback.call1(py, (py_model,))?;
+            counter += 1;
+        }
         Ok(())
     }
 }

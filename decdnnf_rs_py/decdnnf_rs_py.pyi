@@ -81,5 +81,25 @@ class PyDecisionDNNF:
         :param kwargs: see below
 
         :Keyword Arguments:
-            * *compact* sets the lexicographic order 
+            * *lexico* sets the lexicographic order 
+        """
+
+    def sampling(n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+        r"""
+        Samples uniformly some models of the Decision-DNNF.
+
+        The provided callback function is called with the models.
+        A model is given as a list of literals, sorted from the first variable to the last.
+
+        The default order is dependant of the structure of the Decision-DNNF in memory.
+        In order to sort the models using the lexicographic order, sets the `lexico` flag to True (default order is clearly faster).
+
+        :param n_samples: the number of models to sample
+        :type n_samples: int
+        :param callback: the function to call on the model
+        :type callback: (List[bool]) -> None
+        :param kwargs: see below
+
+        :Keyword Arguments:
+            * *lexico* sets the lexicographic order 
         """

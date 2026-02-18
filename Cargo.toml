@@ -15,4 +15,6 @@ features = ["anyhow", "num-bigint"]
 anyhow = "1.0.101"
 decdnnf_rs = "1.1.0"
 num-bigint = "0.4.6"
+rand = "0.10.0"
 rug = "1.28.1"
+rustc-hash = "2.1.1"
