@@ -13,7 +13,7 @@ features = ["anyhow", "num-bigint"]
 
 [dependencies]
 anyhow = "1.0.101"
-decdnnf_rs = "1.1.0"
+decdnnf_rs = "1.1.2"
 num-bigint = "0.4.6"
 rand = "0.10.0"
 rug = "1.28.1"

@@ -16,12 +16,16 @@ def main(path, index, **kwargs):
 
     :Keyword Arguments:
         * *n-vars* the effective number of variables (must be greater than or equal to the number of variables declared in the Decision-DNNF)
+        * *assumptions* search for models containing all the literals (as integers) of this list
         * *lexico* a Boolean value indicating whether models must be sorted in the lexicographic order (default is no)
     """
     ddnnf = decdnnf_rs_py.PyDecisionDNNF(path)
     if "n-vars" in kwargs:
         ddnnf.update_n_vars(int(kwargs["n-vars"]))
     new_kwargs = {}
+    if "assumptions" in kwargs:
+        str_lits = kwargs["assumptions"].split(',')
+        new_kwargs["assumptions"] = [int(x) for x in str_lits]
     if "lexico" in kwargs:
         if kwargs["lexico"] in ["false", "False", "off", "0"]:
             new_kwargs["lexico"] = False

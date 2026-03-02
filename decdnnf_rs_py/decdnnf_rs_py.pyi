@@ -81,6 +81,7 @@ class PyDecisionDNNF:
         :param kwargs: see below
 
         :Keyword Arguments:
+            * *assumptions* search for models containing all the literals (as integers) of this list
             * *lexico* sets the lexicographic order 
         """
 
@@ -101,5 +102,6 @@ class PyDecisionDNNF:
         :param kwargs: see below
 
         :Keyword Arguments:
+            * *assumptions* search for models containing all the literals (as integers) of this list
             * *lexico* sets the lexicographic order 
         """
