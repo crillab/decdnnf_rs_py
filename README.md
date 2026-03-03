@@ -1,6 +1,6 @@
 # decdnnf-py
 
-Python bindings for [decdnnf-rs](https://crates.io/crates/decdnnf_rs/1.1.0), built using [PyO3](https://github.com/PyO3/pyo3).
+Python bindings for [decdnnf-rs](https://crates.io/crates/decdnnf_rs/), built using [PyO3](https://github.com/PyO3/pyo3).
 
 ## How to build
 
