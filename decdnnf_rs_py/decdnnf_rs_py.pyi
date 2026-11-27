@@ -1,5 +1,4 @@
-from typing import Callable, List, Optional
-
+from typing import Any, Callable, List, Optional
 
 class PyDecisionDNNF:
     """
@@ -9,8 +8,7 @@ class PyDecisionDNNF:
     """
 
     def __init__(self, path: str) -> None: ...
-
-    def update_n_vars(n_vars: int) -> None:
+    def update_n_vars(self, n_vars: int) -> None:
         """
         Updates the number of variables.
 
@@ -23,7 +21,7 @@ class PyDecisionDNNF:
         :type n_vars: int
         """
 
-    def model(**kwargs: str) -> Optional[List[int]]:
+    def model(self, **kwargs: Any) -> Optional[List[int]]:
         """
         Computes a model.
 
@@ -35,7 +33,7 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def count_models(**kwargs: str) -> int:
+    def count_models(self, **kwargs: Any) -> int:
         """
         Count the models of the Decision-DNNF.
 
@@ -47,7 +45,7 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def enumerate_models(callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def enumerate_models(self, callback: Callable[[List[Optional[int]]], None], **kwargs: Any) -> None:
         r"""
         Enumerates the models of the Decision-DNNF.
 
@@ -56,7 +54,7 @@ class PyDecisionDNNF:
         In case `None` replaces a literal, then setting any polarity to the literal leads to a model.
 
         :param callback: the function to call for each model
-        :type callback: (List[bool]) -> None
+        :type callback: (List[Optional[int]]) -> None
         :param kwargs: see below
 
         :Keyword Arguments:
@@ -64,7 +62,7 @@ class PyDecisionDNNF:
             * *compact* a Boolean value indicating whether models must be compacted (literals replaced by `None` if both values leads to a model)
         """
 
-    def direct_access(index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def direct_access(self, index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: Any) -> None:
         r"""
         Computes the n-th model of the Decision-DNNF.
 
@@ -77,7 +75,7 @@ class PyDecisionDNNF:
         :param index: the index of the model; must be lower than the model count
         :type index: int
         :param callback: the function to call on the model
-        :type callback: (List[bool]) -> None
+        :type callback: (List[Optional[int]]) -> None
         :param kwargs: see below
 
         :Keyword Arguments:
@@ -85,7 +83,7 @@ class PyDecisionDNNF:
             * *lexico* sets the lexicographic order 
         """
 
-    def sampling(n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def sampling(self, n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: Any) -> None:
         r"""
         Samples uniformly some models of the Decision-DNNF.
 
@@ -98,10 +96,11 @@ class PyDecisionDNNF:
         :param n_samples: the number of models to sample
         :type n_samples: int
         :param callback: the function to call on the model
-        :type callback: (List[bool]) -> None
+        :type callback: (List[Optional[int]]) -> None
         :param kwargs: see below
 
         :Keyword Arguments:
             * *assumptions* search for models containing all the literals (as integers) of this list
             * *lexico* sets the lexicographic order 
+            * *seed* sets the random seed
         """
