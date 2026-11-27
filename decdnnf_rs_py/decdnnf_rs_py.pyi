@@ -9,8 +9,7 @@ class PyDecisionDNNF:
     """
 
     def __init__(self, path: str) -> None: ...
-
-    def update_n_vars(n_vars: int) -> None:
+    def update_n_vars(self, n_vars: int) -> None:
         """
         Updates the number of variables.
 
@@ -23,7 +22,7 @@ class PyDecisionDNNF:
         :type n_vars: int
         """
 
-    def model(**kwargs: str) -> Optional[List[int]]:
+    def model(self, **kwargs: str) -> Optional[List[int]]:
         """
         Computes a model.
 
@@ -35,7 +34,7 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def count_models(**kwargs: str) -> int:
+    def count_models(self, **kwargs: str) -> int:
         """
         Count the models of the Decision-DNNF.
 
@@ -47,7 +46,7 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def enumerate_models(callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def enumerate_models(self, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
         r"""
         Enumerates the models of the Decision-DNNF.
 
@@ -64,7 +63,7 @@ class PyDecisionDNNF:
             * *compact* a Boolean value indicating whether models must be compacted (literals replaced by `None` if both values leads to a model)
         """
 
-    def direct_access(index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def direct_access(self, index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
         r"""
         Computes the n-th model of the Decision-DNNF.
 
@@ -85,7 +84,7 @@ class PyDecisionDNNF:
             * *lexico* sets the lexicographic order 
         """
 
-    def sampling(n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def sampling(self, n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
         r"""
         Samples uniformly some models of the Decision-DNNF.
 
