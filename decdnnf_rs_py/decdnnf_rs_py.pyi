@@ -54,7 +54,7 @@ class PyDecisionDNNF:
         In case `None` replaces a literal, then setting any polarity to the literal leads to a model.
 
         :param callback: the function to call for each model
-        :type callback: (List[bool]) -> None
+        :type callback: (List[Optional[int]]) -> None
         :param kwargs: see below
 
         :Keyword Arguments:
@@ -75,7 +75,7 @@ class PyDecisionDNNF:
         :param index: the index of the model; must be lower than the model count
         :type index: int
         :param callback: the function to call on the model
-        :type callback: (List[bool]) -> None
+        :type callback: (List[Optional[int]]) -> None
         :param kwargs: see below
 
         :Keyword Arguments:
@@ -96,7 +96,7 @@ class PyDecisionDNNF:
         :param n_samples: the number of models to sample
         :type n_samples: int
         :param callback: the function to call on the model
-        :type callback: (List[bool]) -> None
+        :type callback: (List[Optional[int]]) -> None
         :param kwargs: see below
 
         :Keyword Arguments:
