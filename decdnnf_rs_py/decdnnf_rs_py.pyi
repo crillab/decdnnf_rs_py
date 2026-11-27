@@ -1,5 +1,4 @@
-from typing import Callable, List, Optional
-
+from typing import Any, Callable, List, Optional
 
 class PyDecisionDNNF:
     """
@@ -22,7 +21,7 @@ class PyDecisionDNNF:
         :type n_vars: int
         """
 
-    def model(self, **kwargs: str) -> Optional[List[int]]:
+    def model(self, **kwargs: Any) -> Optional[List[int]]:
         """
         Computes a model.
 
@@ -34,7 +33,7 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def count_models(self, **kwargs: str) -> int:
+    def count_models(self, **kwargs: Any) -> int:
         """
         Count the models of the Decision-DNNF.
 
@@ -46,7 +45,7 @@ class PyDecisionDNNF:
             * *assumptions* search for models containing all the literals (as integers) of this list
         """
 
-    def enumerate_models(self, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def enumerate_models(self, callback: Callable[[List[Optional[int]]], None], **kwargs: Any) -> None:
         r"""
         Enumerates the models of the Decision-DNNF.
 
@@ -63,7 +62,7 @@ class PyDecisionDNNF:
             * *compact* a Boolean value indicating whether models must be compacted (literals replaced by `None` if both values leads to a model)
         """
 
-    def direct_access(self, index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def direct_access(self, index: int, callback: Callable[[List[Optional[int]]], None], **kwargs: Any) -> None:
         r"""
         Computes the n-th model of the Decision-DNNF.
 
@@ -84,7 +83,7 @@ class PyDecisionDNNF:
             * *lexico* sets the lexicographic order 
         """
 
-    def sampling(self, n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: str) -> None:
+    def sampling(self, n_samples: int, callback: Callable[[List[Optional[int]]], None], **kwargs: Any) -> None:
         r"""
         Samples uniformly some models of the Decision-DNNF.
 
